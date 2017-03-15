@@ -1,0 +1,258 @@
+html,body{
+	height: 100%;
+	width:100%;
+	font-family: "微软雅黑";
+}
+ul,li{
+	list-style: none;
+	margin:0px;
+	padding:0px;
+}
+.window{
+	border:1px solid #ccc;
+	margin:50px auto;
+	height: 500px;
+	width:700px;
+	overflow: hidden;
+	box-shadow: 0px 5px 5px #ccc;
+}
+.win_left{
+	background-color: #2e3238;
+	height: 500px;
+	width:30%;
+	float:left;
+}
+.searchBox {
+	width:94%;
+	height: 22px;
+	margin:5px;
+	border:1px solid #ccc;
+	background: #fff;
+	border-radius: 2px;
+}
+.searchBox input{
+	height: 20px;
+	padding-left: 5px;
+	width:85%;
+	display: inline-block;
+	outline:none;
+	border:none;
+	font-size:12px; 
+	float: left;
+}
+.searchBox span{
+	display: inline-block;
+	float: left;
+	height: 20px;
+	width:15%;
+	background:url(../img/search.png) no-repeat center center; 
+}
+.cursor{
+	cursor: pointer;
+}
+.contactList{
+	height: 466px;
+	max-height: 466px;
+	overflow-y: auto;
+}
+.contactList li{
+	height: 30px;
+	padding:5px;
+	overflow:hidden;
+}
+.contactList li img{
+	height: 25px;
+	width:25px;
+	float: left;
+}
+.contactList li p{
+	float: left;
+	height: 25px;
+	line-height:25px;
+	margin-left: 10px;
+	font-size: 14px;
+	color:#ccc; 
+}
+.win_right{
+	background-color:#eee;
+	width:70%;
+	float:right;
+	height: 600px;
+}
+.title{
+	height: 19px;
+	border-bottom:1px solid #eef;
+}
+.title{
+	font-size:15px;
+	font-family: "微软雅黑";
+	text-align: center;
+}
+.dialog{
+	max-height: 320px;
+	height:320px;
+	overflow-y:auto;
+	background: #eee;
+}
+.editMsg{
+	background: #fff;
+	height: 150px;
+}
+.moji{
+	height:30px;
+	padding-top: 5px;
+	position: relative;
+}
+.moji img{
+	display: inline-block;
+	height: 24px;
+	width: 24px;
+	margin:0px 10px;
+}
+.moji input{
+	position: absolute;
+	width: 60px;
+	left: 60px;
+	top:6px;
+	opacity: 0;
+}
+.input{
+	width: 100%;
+	height: 80px;
+	padding:5px;
+	resize: none;
+	outline: none;
+	border:none;
+}
+input[type="button"]{
+	float: right;
+	margin-right: 10px;
+}
+.dialogList li.msg_left img{
+	height: 30px;
+	width:30px;
+	float: left;
+}
+.dialogList li{
+	min-height: 50px;
+	max-height: auto;
+	padding: 0px 10px;
+	overflow: hidden;
+}
+.dialogList li h5{
+	height: 16px;
+	width: 200px;
+	margin:8px auto;
+	font-size:12px;
+	background: #eee;
+	opacity: 0.3;
+	font-color:#fff;
+	line-height: 16px;
+	text-align: center;
+}
+.dialogList li.msg_left p{
+	float: left;
+	margin-left: 10px;
+	border-radius: 3px;
+	background: #b2e281;
+	font-size:12px;
+	padding:3px 5px;
+	position: relative;
+	top:2px;
+}
+.dialogList li.msg_left p:before{
+	content: "";
+	position: absolute;
+	width: 0px;
+	height: 0px;
+	left: -4px;
+	top:5px;
+	border-right:5px solid #b2e281;
+	border-top:5px solid transparent;
+	border-bottom:5px solid transparent;
+}
+
+.dialogList li.msg_right img{
+	height: 30px;
+	width:30px;
+	float: right;
+}
+.dialogList li.msg_right p{
+	float: right;
+	margin-right: 10px;
+	border-radius: 3px;
+	background: #b2e281;
+	font-size:12px;
+	padding:3px 5px;
+	position: relative;
+	top:2px;
+}
+.dialogList li.msg_right p:before{
+	content: "";
+	position: absolute;
+	width: 0px;
+	height: 0px;
+	right: -4px;
+	top:5px;
+	border-left:5px solid #b2e281;
+	border-top:5px solid transparent;
+	border-bottom:5px solid transparent;
+}
+.shadow{
+	height: 110%;
+	width: 100%;
+	position: absolute;
+	top:0;
+	left:0;
+	background:#ccc;
+	// display: none;
+}
+
+.shadow form{
+	height: 100px;
+	width: 300px;
+	position: fixed;
+	left: 0;
+	top:0;
+	bottom:0;
+	right:0;
+	margin:auto;
+	background: rgba(1,1,24,0.4) ;
+	border-radius:5px ;
+}
+.shadow form legend{
+	color:#999;
+	text-align: center;
+}
+.shadow form label{
+	margin-left: 50px;
+}
+/*重置ngNotify提示框的样式，减少高度*/
+.ngn{
+	// padding：25px 80px;
+	padding:10px 80px;
+}
+
+/*定义滚动条高宽及背景 高宽分别对应横竖滚动条的尺寸*/  
+::-webkit-scrollbar  
+{  
+    width: 5px;  
+    height: 5px;  
+    background-color: #F5F5F5;  
+}  
+  
+/*定义滚动条轨道 内阴影+圆角*/  
+::-webkit-scrollbar-track  
+{  
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);  
+    border-radius: 10px;  
+    background-color: #F5F5F5;  
+}  
+  
+/*定义滑块 内阴影+圆角*/  
+::-webkit-scrollbar-thumb  
+{  
+    border-radius: 10px;  
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);  
+    background-color: lightblue;  
+}

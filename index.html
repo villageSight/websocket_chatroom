@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>websocket创建实时聊天系统</title>
+	<script type="text/javascript" src="js/jquery.min.js"></script>
+	<script type="text/javascript" src="js/angular.min.js"></script>
+	<script type="text/javascript" src="js/jquery.qqFace.js"></script>
+	<script type="text/javascript" src="js/socket.io.js"></script>
+	<script type="text/javascript" src="js/ng-notify.min.js"></script>
+	<link link rel="shortcut icon" href="img/bitbug_favicon.ico">
+	<link rel="stylesheet" href="css/bootstrap.min.css">
+	<link rel="stylesheet" href="css/ng-notify.min.css">
+	<link rel="stylesheet" type="text/css" href="css/main.css">
+	<style type="text/css">
+	.comment { width: 680px; margin: 20px auto; position: relative; background: #fff; padding: 20px 50px 50px; border: 1px solid #DDD; border-radius: 5px; }
+	.comment h3 { height: 28px; line-height: 28px }
+	.com_form { width: 100%; position: relative }
+	.com_form p { height: 28px; line-height: 28px; position: relative; margin-top: 10px; }
+	img.emotion { width: 42px; height: 20px; padding-left: 20px; cursor: pointer }
+	img.emotion:hover { background-position: 2px -28px }
+	.qqFace {margin-top: 4px; background: #fff; padding: 2px; border: 1px #dfe6f6 solid; top:-126px !important;}
+	.qqFace table td { padding: 0px; }
+	.qqFace table td img { cursor: pointer; border: 1px #fff solid; }
+	.qqFace table td img:hover { border: 1px #0066cc solid; }
+	</style>
+</head>
+<body ng-app="myapp" ng-controller="myController as myCtrl">
+	<section class="window">
+		<div class="win_left">
+			<div class="searchBox"><input type="text" placeholder="搜索" ng-model="searchTxt"/><span class="cursor"></span></div>
+			<div class="contactList">
+				<ul>
+					<li ng-repeat="(key, value) in dataset | filter :searchTxt">
+						<img src="{{img_url}}" alt="头像">
+						<p>{{value}}</p>
+					</li>
+				</ul>
+			</div>
+		</div>
+		<div class="win_right">
+			<p class="title">淘宝前端讨论组在线(<span>{{count||0}}</span>)人</p>
+			<div class="dialog" id="dialog">
+				<ul class="dialogList" id="dialogList">
+				</ul>
+			</div>
+			<div class="editMsg">
+				<div class="moji">
+					<a href="javascript:;" ><img src="img/smile.png" class="emotion"></a>
+					<a href="javascript:;"><img src="img/img.png" ><input type="file" id="file" onchange="uploadFiles(this.files)" /></a>
+				</div>
+				<textarea class="input" placeholder="编辑文字" id="text" name="text" ng-model="data.msg"></textarea>
+				<input type="button" value="发送(S)" ng-click="myCtrl.ok()">
+			</div>
+		</div>
+	</section>
+	<div class="shadow" id="shadow">
+	<h3><marquee behavior="alternate" direction="right">欢迎来到前端小小牛聊天室</marquee></h3>
+		<form>
+			<legend>首次登陆设置昵称</legend>
+			<label>
+				<input type="text" placeholder="请设置你的昵称" ng-model="submit.nickname"/>
+				<button id="confirm" ng-click="myCtrl.setName()">确定</button>
+			</label>
+		</form>
+	</div>
+<!-- 	<script type="text/javascript">
+		var socket=io.connect("http://localhost:8052");
+
+		var app=angular.module('myapp', ['ngNotify']);
+
+		//图片上传
+		function uploadFiles(files){
+			if(window.FileReader){
+				var Reg=/image\/.*/i; //匹配图片类型
+				console.log(Reg.test(files[0].type),999)
+				if(Reg.test(files[0].type)){
+					var reader=new FileReader();
+					reader.readAsDataURL(files[0]);
+					reader.onloadend=function(e){
+						var imgURL=e.target.result;
+						var head=JSON.parse(localStorage.getItem('userinfo')).img_url;
+						var params={
+							imgURL:imgURL,
+							head:head
+						}
+						socket.emit('uploadImg',params);
+					}
+				}else{
+					alert('请确定是图片类型')
+				}
+			} else {
+				alert('浏览器不支持File上传')
+			}
+		}
+
+		/**
+		 * [sendImg 聊天发送图片]
+		 */
+		function sendImg(res){
+			socket.on('imgBack',function(data){
+				var local_time=new Date().toLocaleString();
+				var user_info=JSON.parse(localStorage.getItem('userinfo'));
+				var oHeight=Number($('#dialogList li').height());
+				if(data.head==user_info.img_url){
+					var li=['<li class="msg_left">',
+							   '<h5>'+user_info.nickname+' : '+local_time+'</h5>',
+								'<img src='+data.head+'>',
+								'<img src='+data.imgURL+' style="height:50%;width:50%;display:block;margin-left:5px;"/>', 
+							'</li>'
+							].join('');
+					$('#dialogList').append(li);
+					$('#dialog').scrollTop(oHeight*($('#dialogList li').length));
+				}else{
+					var li=['<li class="msg_right">',
+							   '<h5>'+user_info.nickname+' : '+local_time+'</h5>',
+								'<img src='+data.head+'>',
+								'<img src='+data.imgURL+' style="height:50%;width:50%;display:block;margin-right:5px;"/>', 
+							'</li>'
+							].join('');
+					$('#dialogList').append(li);
+					$('#dialog').scrollTop(oHeight*($('#dialogList li').length));				
+				}
+			});
+		}
+
+
+		app.controller('myController', ['$scope','ngNotify','$timeout',
+			function($scope,ngNotify,$timeout){
+			var myCtrl=this;
+			$scope.data={};
+			$scope.submit={};
+			/**
+			 * 操作提示框ngNotify配置
+			 */
+			ngNotify.config({
+				theme: 'pure',
+				position: 'top',
+				duration: 1000,
+				type: 'info',
+				sticky: false,
+				html: false
+			});
+
+			//统计在线人数
+			socket.on('online_count',function(res){
+				$timeout(function(){
+					$scope.count=res.count;
+					$scope.dataset=res.username;
+				});
+			});
+
+			//获取登陆者信息
+			myCtrl.getUserInfo=function(nickname){
+				var user_info=new Object();
+				var img_src="img/p"+Math.floor(Math.random()*9)+".png";
+				user_info.nickname=nickname;
+				user_info.img_url=img_src;
+				return user_info;
+			}
+
+			//设置昵称
+			myCtrl.setName=function(){
+				var nickname=$scope.submit.nickname;
+				if(nickname && nickname.trim()){
+					socket.emit('nickname',nickname,function(res){
+						console.log(res,"服务端返回数据");
+						if(res.status==0){
+							ngNotify.set("设置昵称成功",{"position":"top",duration:1000,type:"success"});
+
+							//设置用户基本昵称和头像，头像随机分配
+							var userinfo=myCtrl.getUserInfo(nickname);
+							localStorage.setItem('userinfo',JSON.stringify(userinfo));
+
+							$('#shadow').css({"display":"none"});
+							$scope.dataset=res.username;
+							$scope.img_url=userinfo.img_url;
+							sendImg(res);
+						}else{
+							$scope.submit={};
+							ngNotify.set("昵称已存在，请重新输入",{"position":"top",duration:2000,type:"error"});
+						}
+					});
+				}else{
+					ngNotify.set("昵称不能为空",{"position":"top",duration:2000,type:"error"});	
+					return ;				
+				}	
+			}
+
+			//gif表情初始化
+			$('.emotion').qqFace({
+				id : 'facebox', 
+				assign:'text', 
+				path:'arclist/' //表情存放的路径
+
+			});
+
+			//正则匹配字符替换成图片对应路径
+			myCtrl.replace_em=function(str){
+				str = str.replace(/\</g,'&lt;');
+				str = str.replace(/\>/g,'&gt;');
+				str = str.replace(/\n/g,'<br/>');
+				str = str.replace(/\[em_([0-9]*)\]/g,'<img src="arclist/$1.gif" border="0" />');
+				return str;
+			}
+
+			//发送消息
+			myCtrl.ok=function(){
+				var str = $("#text").val();
+				var params={
+					msg:str,
+					img_url:JSON.parse(localStorage.getItem('userinfo')).img_url
+				}
+				if(params.msg && (params.msg).trim()){
+					socket.emit('postData',params,function(req){
+						console.log("发送成功",req);
+					});
+				}else{
+					ngNotify.set("消息不能为空",{"position":"top",duration:1000,type:"error"});
+					return ;	
+				}
+			}
+
+			//接受服务器端广播回的聊天数据res
+			socket.on("sendData",function(res){
+				console.log(res,'服务器返回的数据');
+				var local_time=new Date().toLocaleString();
+				var user_info=JSON.parse(localStorage.getItem('userinfo'));
+				var oHeight=Number($('#dialogList li').height());
+				if(res.nickname==user_info.nickname){
+					var li=['<li class="msg_left">',
+							   '<h5>'+res.nickname+' : '+local_time+'</h5>',
+								'<img src='+res.img_url+'>',
+								'<p>'+myCtrl.replace_em(res.msg)+'</p>', 
+							'</li>'
+							].join('');
+					$('#dialogList').append(li);
+					$('#dialog').scrollTop(oHeight*($('#dialogList li').length));
+					console.log($('#dialogList').scrollTop());
+				}else{
+					var li=['<li class="msg_right">',
+							   '<h5>'+res.nickname+' : '+local_time+'</h5>',
+								'<img src='+res.img_url+'>',
+								'<p>'+myCtrl.replace_em(res.msg)+'</p>', 
+							'</li>'
+							].join('');
+					$('#dialogList').append(li);
+					$('#dialog').scrollTop(oHeight*($('#dialogList li').length));
+				}
+				$("#text").val('');
+			});
+
+			/**
+			 * [回车发送消息]
+			 */
+			$(window).keydown(function(ev){
+				/* Act on the event */
+				var evt=ev||event;
+				var keycode=evt.keyCode;
+				var str = $("#text").val();
+				if(keycode==13){
+					if(!str.trim()){
+						ngNotify.set("消息不能为空",{"position":"top",duration:1000,type:"error"});
+						return ;
+					}
+					myCtrl.ok();	
+				}
+			});
+		}]);
+	</script> -->
+</body>
+</html>
