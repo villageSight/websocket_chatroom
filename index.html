@@ -6,7 +6,7 @@
 	<script type="text/javascript" src="js/jquery.min.js"></script>
 	<script type="text/javascript" src="js/angular.min.js"></script>
 	<script type="text/javascript" src="js/jquery.qqFace.js"></script>
-	<script type="text/javascript" src="js/socket.io.js"></script>
+	<script type="text/javascript" src="/socket.io/socket.io.js"></script>
 	<script type="text/javascript" src="js/ng-notify.min.js"></script>
 	<link link rel="shortcut icon" href="img/bitbug_favicon.ico">
 	<link rel="stylesheet" href="css/bootstrap.min.css">
@@ -65,7 +65,7 @@
 		</form>
 	</div>
 	<script type="text/javascript">
-		var socket=io.connect("http://172.16.0.42:8052");
+		var socket=io.connect("http://172.16.0.17:3000");
 
 		var app=angular.module('myapp', ['ngNotify']);
 

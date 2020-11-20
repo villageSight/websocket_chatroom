@@ -1,20 +1,17 @@
-var express=require('express');
-var app=express();
-var ios=require('socket.io');
-var fs=require("fs");
+const express = require('express');
+const app = express();
+const server = require('http').createServer(app);
+const io = require('socket.io')(server);
+const fs=require("fs");
+let count=0,NickName=[];
+
 app.use(express.static(__dirname));
 
-var count=0,NickName=[];
-
-var server=app.get('/',function(req,res){
+app.get('/',function(req,res){
 	res.sendFile(__dirname+"/"+'index.html','utf-8');
-}).listen(8052,function(){
-	var address=server.address().address;
-	var port=server.address().port;
-	console.log("this server is running in the http://localhost:%s:%s",address,port)
-})
+});
 
-ios.listen(server).sockets.on('connection',function(socket){
+io.on('connection',function(socket){
 	console.log("用户已登录");
 	count++;                        //统计在线人数
 	socket.on('nickname',function(nk,callback){
@@ -47,7 +44,7 @@ ios.listen(server).sockets.on('connection',function(socket){
 
 	//接受客户端发送的图片BASE64字符串
 	socket.on('uploadImg',function(data){
-		var Reg=/image\/.*/i;
+		let Reg=/image\/.*/i;
 		if(data['imgURL'].match(Reg)){
 			socket.broadcast.emit("imgBack",data);
 			socket.emit("imgBack",data);
@@ -58,10 +55,14 @@ ios.listen(server).sockets.on('connection',function(socket){
 	//判断用户下线，下线则数组中移除该用户
 	socket.on("disconnect",function(){
 		count--;
-		var index=NickName.indexOf(socket.nickname);
+		let index=NickName.indexOf(socket.nickname);
 		NickName.splice(index,1);
 		console.log("用户已下线",NickName);
 		socket.broadcast.emit('online_count',{'count':count,"username":NickName});
 		socket.emit('online_count',{'count':count,"username":NickName});
 	});
-})
+});
+
+server.listen(3000, () => {
+  console.log('your node web server is listening on *:3000');
+});
